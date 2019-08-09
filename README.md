@@ -18,6 +18,10 @@
   - [How to Use](#how-to-use)
   - [More Technical](#more-technical)
 
+# Prerequisites
+The CRI FS Hook uses the [Hooks Shared Library](https://github.com/Sewer56/Reloaded.SharedLib.Hooks).
+Please download and extract that mod first.
+
 # About This Project
 
 The following project is a [Reloaded II](https://github.com/Reloaded-Project/Reloaded-II) Mod Loader mod that wraps around the "FileSystem" present in CRI Middleware libraries.
