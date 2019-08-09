@@ -6,6 +6,6 @@
   "ModDescription": "Hooks the CRIWare Filesystem used in a variety of games such as Sonic Heroes and Sonic Riders. Allows for faster startup times and file redirection to files larger than original.",
   "ModDll": "CriFsHook.ReloadedII.dll",
   "ModIcon": "Preview.png",
-  "ModDependencies": [],
+  "ModDependencies": [ "reloaded.sharedlib.hooks" ],
   "SupportedAppId": [ "Tsonic_win.EXE", "SonicRiders.exe" ]
 }
