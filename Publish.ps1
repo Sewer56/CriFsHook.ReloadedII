@@ -1,5 +1,7 @@
 # Project Output Paths
-$CrifsHookOutputPath = "CriFsHook.ReloadedII/bin"
+$modOutputPath = "CriFsHook.ReloadedII/bin"
+$solutionName = "CriFsHook.ReloadedII.sln"
+$publishName = "CriFsHook.zip"
 $publishDirectory = "Publish"
 
 if ([System.IO.Directory]::Exists($publishDirectory)) {
@@ -7,12 +9,13 @@ if ([System.IO.Directory]::Exists($publishDirectory)) {
 }
 
 # Build
-dotnet clean CriFsHook.ReloadedII.sln
-dotnet build -c Release CriFsHook.ReloadedII.sln
+dotnet restore $solutionName
+dotnet clean $solutionName
+dotnet build -c Release $solutionName
 
 # Cleanup
-Get-ChildItem $CrifsHookOutputPath -Include *.pdb -Recurse | Remove-Item -Force -Recurse
-Get-ChildItem $CrifsHookOutputPath -Include *.xml -Recurse | Remove-Item -Force -Recurse
+Get-ChildItem $modOutputPath -Include *.pdb -Recurse | Remove-Item -Force -Recurse
+Get-ChildItem $modOutputPath -Include *.xml -Recurse | Remove-Item -Force -Recurse
 
 # Make compressed directory
 if (![System.IO.Directory]::Exists($publishDirectory)) {
@@ -21,4 +24,4 @@ if (![System.IO.Directory]::Exists($publishDirectory)) {
 
 # Compress
 Add-Type -A System.IO.Compression.FileSystem
-[IO.Compression.ZipFile]::CreateFromDirectory( $CrifsHookOutputPath + '/Release', 'Publish/CriFsHook.zip')
+[IO.Compression.ZipFile]::CreateFromDirectory( $modOutputPath + '/Release', 'Publish/' + $publishName)
