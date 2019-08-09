@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using CriFsHook.ReloadedII.CRI;
 using Reloaded.Hooks;
+using Reloaded.Hooks.Definitions;
+using Reloaded.Hooks.ReloadedII.Interfaces;
 using Reloaded.Memory.Buffers;
 using Reloaded.Memory.Sigscan;
 using Reloaded.Memory.Sigscan.Structs;
@@ -29,11 +31,13 @@ namespace CriFsHook.ReloadedII
         private Process                                     _currentProcess;
         private ProcessModule                               _mainModule;
         private ILogger                                     _logger;
+        private WeakReference<IReloadedHooks>               _reloadedHooks;
 
         /* Setup & Teardown */
         public CriHook(IModLoader modLoader)
         {
             _logger = (ILogger) modLoader.GetLogger();
+            _reloadedHooks = modLoader.GetController<IReloadedHooks>();
             CreateNewBuffer();
 
             _currentProcess = Process.GetCurrentProcess();
@@ -49,7 +53,7 @@ namespace CriFsHook.ReloadedII
             }
             else
             {
-                _buildFileTableHook = HookAndPrint<FileTable.BuildFileTable>(BuildFileTableImpl, buildFileTable.Offset).Activate();
+                _buildFileTableHook           = HookAndPrint<FileTable.BuildFileTable>(BuildFileTableImpl, buildFileTable.Offset).Activate();
                 _getFileEntryFromFilePathHook = HookAndPrint<FileTable.GetFileEntryFromFilePath>(GetFileEntryFromPathImpl, getFileEntryFromFilePath.Offset).Activate();
             }
         }
@@ -69,12 +73,17 @@ namespace CriFsHook.ReloadedII
         private IHook<TFunction> HookAndPrint<TFunction>(TFunction function, int offset)
         {
             var address = (long) (_mainModule.BaseAddress + offset);
-            var hook = IntPtr.Size == 4
-                ? (IHook<TFunction>) new Reloaded.Hooks.X86.Hook<TFunction>(function, address)
-                : new Reloaded.Hooks.X64.Hook<TFunction>(function, address);
-
-            _logger.PrintMessage($"[CriFsHook] Successfully hooked {typeof(TFunction).Name} at {address:X}", _logger.ColorGreenLight);
-            return hook;
+            if (_reloadedHooks.TryGetTarget(out var hooks))
+            {
+                var hook = hooks.CreateHook(function, address).Activate();
+                _logger.PrintMessage($"[CriFsHook] Successfully hooked {typeof(TFunction).Name} at {address:X}", _logger.ColorGreenLight);
+                return hook;
+            }
+            else
+            {
+                _logger.PrintMessage($"[CriFsHook] Reloaded.Hooks Shared Library not found. Not hooking: {typeof(TFunction).Name} at {address:X}", _logger.ColorRed);
+                return null;
+            }
         }
 
         /* Hooks */
