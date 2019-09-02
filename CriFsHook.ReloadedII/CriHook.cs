@@ -96,8 +96,8 @@ namespace CriFsHook.ReloadedII
                 return (FileEntry*) entry;
 
             // Otherwise create new file entry.
-            var fileEntry = new FileEntry();
-            fileEntry.FileHandle = CreateFile(fullFilePath, Native.Native.FileAccess.FILE_GENERIC_READ | Native.Native.FileAccess.FILE_GENERIC_WRITE, FileShare.ReadWrite, new SECURITY_ATTRIBUTES(), FileMode.Open, FileFlagsAndAttributes.FILE_ATTRIBUTE_NORMAL);
+            var fileEntry        = new FileEntry();
+            fileEntry.FileHandle = CreateFileW(fullFilePath, Native.Native.FileAccess.FILE_GENERIC_READ | Native.Native.FileAccess.FILE_GENERIC_WRITE, FileShare.ReadWrite, new SECURITY_ATTRIBUTES(), FileMode.Open, FileFlagsAndAttributes.FILE_ATTRIBUTE_NORMAL);
             fileEntry.FileSize   = GetFileSize(fileEntry.FileHandle, out var lpFileSizeHigh);
             fileEntry.FileName   = WriteToBuffer(Encoding.ASCII.GetBytes(fullFilePath));
 

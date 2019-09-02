@@ -10,7 +10,7 @@ namespace CriFsHook.ReloadedII.Native
     public static class Native
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr CreateFile(
+        public static extern IntPtr CreateFileW(
             string lpFileName,
             FileAccess dwDesiredAccess,
             FileShare dwShareMode,
