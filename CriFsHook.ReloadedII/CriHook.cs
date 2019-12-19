@@ -34,6 +34,7 @@ namespace CriFsHook.ReloadedII
         private WeakReference<IReloadedHooks>               _reloadedHooks;
 
         /* Setup & Teardown */
+        public static void Main() { }
         public CriHook(IModLoader modLoader)
         {
             _logger = (ILogger) modLoader.GetLogger();
