@@ -7,6 +7,7 @@ $publishDirectory = "Publish"
 [Environment]::CurrentDirectory = $PWD
 
 # Clean anything in existing Release directory.
+Remove-Item $publishDirectory -Recurse
 Remove-Item $modOutputPath -Recurse
 New-Item $modOutputPath -ItemType Directory
 New-Item $publishDirectory -ItemType Directory
@@ -14,15 +15,14 @@ New-Item $publishDirectory -ItemType Directory
 # Build
 dotnet restore $solutionName
 dotnet clean $solutionName
-dotnet publish $solutionName -c Release --self-contained false -o "$modOutputPath"
 dotnet publish $solutionName -c Release -r win-x86 --self-contained false -o "$modOutputPath/x86" /p:PublishReadyToRun=true
 dotnet publish $solutionName -c Release -r win-x64 --self-contained false -o "$modOutputPath/x64" /p:PublishReadyToRun=true
 
 # Remove Redundant Files
-Remove-Item "$modOutputPath/x86/Preview.png"
+Move-Item -Path "$modOutputPath/x86/ModConfig.json" -Destination "$modOutputPath/ModConfig.json"
+Move-Item -Path "$modOutputPath/x86/Preview.png" -Destination "$modOutputPath/Preview.png"
+Remove-Item "$modOutputPath/x64/ModConfig.json" 
 Remove-Item "$modOutputPath/x64/Preview.png"
-Remove-Item "$modOutputPath/x86/ModConfig.json"
-Remove-Item "$modOutputPath/x64/ModConfig.json"
 
 # Cleanup Unnecessary Files
 Get-ChildItem $modOutputPath -Include *.exe -Recurse | Remove-Item -Force -Recurse
