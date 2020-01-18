@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using CriFsHook.ReloadedII.CRI;
 using Reloaded.Hooks;
@@ -88,11 +89,19 @@ namespace CriFsHook.ReloadedII
         }
 
         /* Hooks */
-        private int BuildFileTableImpl(string folderPath, int decrementsOnNewDirectory, int* a3) => 0;
-
-        private FileEntry* GetFileEntryFromPathImpl(string fullFilePath)
+        private int BuildFileTableImpl(void* folderPath, int decrementsOnNewDirectory, int* a3)
         {
+            _logger.PrintMessage($"[CriFsHook] Ignoring Build File Table", _logger.ColorGreenLight);
+            return 0;
+        }
+
+        private FileEntry* GetFileEntryFromPathImpl(void* fullPath)
+        {
+            if (fullPath == null)
+                return null;
+
             // Check if our collection already has file.
+            string fullFilePath = Marshal.PtrToStringAnsi((IntPtr)fullPath);
             if (_mappingDictionary.TryGetValue(fullFilePath, out var entry))
                 return (FileEntry*) entry;
 

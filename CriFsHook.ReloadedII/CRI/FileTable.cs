@@ -39,7 +39,7 @@ namespace CriFsHook.ReloadedII.CRI
         [Reloaded.Hooks.Definitions.X64.Function(Reloaded.Hooks.Definitions.X64.CallingConventions.Microsoft)]
         [Reloaded.Hooks.Definitions.X86.Function(Reloaded.Hooks.Definitions.X86.CallingConventions.Cdecl)]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public delegate int BuildFileTable(string folderPath, int decrementsOnNewDirectory, int* a3);
+        public delegate int BuildFileTable(void* fullPath, int decrementsOnNewDirectory, int* a3); // Changed to void because game can pass null ptr.
 
         /// <summary>
         /// 006D6330
@@ -71,7 +71,7 @@ namespace CriFsHook.ReloadedII.CRI
         [Reloaded.Hooks.Definitions.X64.Function(Reloaded.Hooks.Definitions.X64.CallingConventions.Microsoft)]
         [Reloaded.Hooks.Definitions.X86.Function(Reloaded.Hooks.Definitions.X86.CallingConventions.Cdecl)]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public delegate FileEntry* GetFileEntryFromFilePath(string fullFilePath);
+        public delegate FileEntry* GetFileEntryFromFilePath(void* fullFilePath); // Changed to void because game can pass null ptr.
 
         /// <summary>
         /// 006D01D0
@@ -87,7 +87,7 @@ namespace CriFsHook.ReloadedII.CRI
         [Reloaded.Hooks.Definitions.X64.Function(Reloaded.Hooks.Definitions.X64.CallingConventions.Microsoft)]
         [Reloaded.Hooks.Definitions.X86.Function(Reloaded.Hooks.Definitions.X86.CallingConventions.Cdecl)]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public delegate FileEntry* LoadADXFromFileTable(string fullFilePath);
+        public delegate FileEntry* LoadADXFromFileTable(string fullFilePath); // Null terminated string
 
         /// <summary>
         /// 006CFBA0
