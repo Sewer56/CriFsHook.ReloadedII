@@ -15,6 +15,7 @@ using Reloaded.Memory.Sigscan.Structs;
 using Reloaded.Mod.Interfaces;
 using Rock.Collections;
 using static CriFsHook.ReloadedII.Native.Native;
+using IReloadedHooks = Reloaded.Hooks.ReloadedII.Interfaces.IReloadedHooks;
 
 namespace CriFsHook.ReloadedII
 {
