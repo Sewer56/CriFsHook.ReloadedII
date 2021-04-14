@@ -45,7 +45,7 @@ namespace CriFsHook.ReloadedII
 
             _currentProcess = Process.GetCurrentProcess();
             _mainModule     = _currentProcess.MainModule;
-            var scanner     = new Scanner(_currentProcess, _mainModule);
+            using var scanner = new Scanner(_currentProcess, _mainModule);
 
             PatternScanResult buildFileTable           = scanner.CompiledFindPattern("81 EC ?? ?? ?? ?? 8D 84 24");
             PatternScanResult getFileEntryFromFilePath = scanner.CompiledFindPattern("8B 44 24 04 81 EC ?? ?? ?? ?? 8D 4C 24 04");
