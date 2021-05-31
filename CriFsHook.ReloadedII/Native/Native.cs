@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-using Microsoft.Win32.SafeHandles;
 
 namespace CriFsHook.ReloadedII.Native
 {
@@ -19,8 +16,11 @@ namespace CriFsHook.ReloadedII.Native
             FileFlagsAndAttributes dwFlagsAndAttributes,
             [Optional] IntPtr hTemplateFile);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll")]
         public static extern uint GetFileSize([In] IntPtr hFile, out uint lpFileSizeHigh);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CloseHandle(IntPtr hObject);
 
         /// <summary>Enumerates the that may apply to files.</summary>
         /// <remarks>These flags may be passed to CreateFile.</remarks>
