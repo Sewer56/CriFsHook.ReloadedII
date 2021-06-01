@@ -22,7 +22,7 @@ namespace CriFsHook.ReloadedII
         private Process                                     _currentProcess;
         private ProcessModule                               _mainModule;
         private ILogger                                     _logger;
-        private WeakReference<IReloadedHooks>               _reloadedHooks;
+        private IReloadedHooks                              _reloadedHooks;
         private static CriHook                              _this;
 
         /* Setup & Teardown */
@@ -31,7 +31,7 @@ namespace CriFsHook.ReloadedII
         {
             _this = this;
             _logger = (ILogger) modLoader.GetLogger();
-            _reloadedHooks = modLoader.GetController<IReloadedHooks>();
+            modLoader.GetController<IReloadedHooks>().TryGetTarget(out _reloadedHooks);
 
             _currentProcess = Process.GetCurrentProcess();
             _mainModule     = _currentProcess.MainModule;
@@ -54,23 +54,21 @@ namespace CriFsHook.ReloadedII
         private IHook<TFunction> HookAndPrint<TFunction>(string functionName, int offset)
         {
             var address = (long) (_mainModule.BaseAddress + offset);
-            if (_reloadedHooks.TryGetTarget(out var hooks))
-            {
-                var hook = hooks.CreateHook<TFunction>(typeof(CriHook), functionName, address).Activate();
-                _logger.PrintMessage($"[CriFsHook] Successfully hooked {typeof(TFunction).Name} at {address:X}", _logger.ColorGreenLight);
-                return hook;
-            }
-            else
-            {
-                _logger.PrintMessage($"[CriFsHook] Reloaded.Hooks Shared Library not found. Not hooking: {typeof(TFunction).Name} at {address:X}", _logger.ColorRed);
-                return null;
-            }
+            var hook = _reloadedHooks.CreateHook<TFunction>(typeof(CriHook), functionName, address).Activate();
+            _logger.PrintMessage($"[CriFsHook] Successfully hooked {typeof(TFunction).Name} at {address:X}", _logger.ColorGreenLight);
+            return hook;
+        }
+
+        private IHook<TFunction> HookAndPrint<TFunction>(TFunction target, int offset)
+        {
+            var address = (long) (_mainModule.BaseAddress + offset);
+            var hook = _reloadedHooks.CreateHook<TFunction>(target, address).Activate();
+            _logger.PrintMessage($"[CriFsHook] Successfully hooked {typeof(TFunction).Name} at {address:X}", _logger.ColorGreenLight);
+            return hook;
         }
 
         /* Hooks */
-#if DEBUG
         [UnmanagedCallersOnly()]
-#endif
         private static int BuildFileTableImplStatic(void* folderPath, int decrementsOnNewDirectory, int* a3) => _this.BuildFileTableImpl(folderPath, decrementsOnNewDirectory, a3);
         private int BuildFileTableImpl(void* folderPath, int decrementsOnNewDirectory, int* a3)
         {
@@ -78,9 +76,7 @@ namespace CriFsHook.ReloadedII
             return 0;
         }
 
-#if DEBUG
         [UnmanagedCallersOnly()]
-#endif
         private static FileEntry* GetFileEntryFromPathImplStatic(void* fullPath) => _this.GetFileEntryFromPathImpl(fullPath);
         private FileEntry* GetFileEntryFromPathImpl(void* fullPath)
         {

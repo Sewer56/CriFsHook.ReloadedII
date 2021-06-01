@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Reloaded.Mod.Interfaces;
 using Reloaded.Mod.Interfaces.Internal;
 
@@ -12,7 +13,7 @@ namespace CriFsHook.ReloadedII
         public void Start(IModLoaderV1 loader)
         {
             #if DEBUG
-            Debugger.Launch();
+            //Debugger.Launch();
             #endif
             _modLoader = (IModLoader)loader;
 
