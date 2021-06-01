@@ -44,6 +44,9 @@ namespace CriFsHook.ReloadedII.CRI
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public delegate int BuildFileTable(void* fullPath, int decrementsOnNewDirectory, int* a3); // Changed to void because game can pass null ptr.
 
+#if !DEBUG
+        [ManagedFunction(CallingConventions.ClrCall)]
+#endif
         [Reloaded.Hooks.Definitions.X64.Function(Reloaded.Hooks.Definitions.X64.CallingConventions.Microsoft)]
         [Reloaded.Hooks.Definitions.X86.Function(Reloaded.Hooks.Definitions.X86.CallingConventions.Cdecl)]
         public struct BuildFileTableFnPtr { public FuncPtr<BlittablePointer<Void>, int, BlittablePointer<int>, int> Value; }
@@ -80,6 +83,9 @@ namespace CriFsHook.ReloadedII.CRI
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public delegate FileEntry* GetFileEntryFromFilePath(void* fullFilePath); // Changed to void because game can pass null ptr.
 
+#if !DEBUG
+        [ManagedFunction(CallingConventions.ClrCall)]
+#endif
         [Reloaded.Hooks.Definitions.X64.Function(Reloaded.Hooks.Definitions.X64.CallingConventions.Microsoft)]
         [Reloaded.Hooks.Definitions.X86.Function(Reloaded.Hooks.Definitions.X86.CallingConventions.Cdecl)]
         public struct GetFileEntryFromFilePathFnPtr { public FuncPtr<BlittablePointer<Void>, BlittablePointer<FileEntry>> Value; }
