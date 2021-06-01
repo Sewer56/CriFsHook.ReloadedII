@@ -20,7 +20,7 @@ namespace CriFsHook.ReloadedII.Native
             void* lpFileName,
             FileAccess dwDesiredAccess,
             FileShare dwShareMode,
-            [Optional] SECURITY_ATTRIBUTES lpSecurityAttributes,
+            [Optional] IntPtr lpSecurityAttributes,
             FileMode dwCreationDisposition,
             FileFlagsAndAttributes dwFlagsAndAttributes,
             [Optional] IntPtr hTemplateFile);
