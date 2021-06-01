@@ -6,9 +6,18 @@ namespace CriFsHook.ReloadedII.Native
 {
     public static class Native
     {
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr CreateFileW(
-            string lpFileName,
+        [SuppressGCTransition]
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr LocalFree(IntPtr hMem);
+
+        [SuppressGCTransition]
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr LocalAlloc(uint uFlags, UIntPtr uBytes);
+
+        [SuppressGCTransition]
+        [DllImport("kernel32.dll")]
+        public unsafe static extern IntPtr CreateFileA(
+            void* lpFileName,
             FileAccess dwDesiredAccess,
             FileShare dwShareMode,
             [Optional] SECURITY_ATTRIBUTES lpSecurityAttributes,
@@ -16,9 +25,11 @@ namespace CriFsHook.ReloadedII.Native
             FileFlagsAndAttributes dwFlagsAndAttributes,
             [Optional] IntPtr hTemplateFile);
 
+        [SuppressGCTransition]
         [DllImport("kernel32.dll")]
-        public static extern uint GetFileSize([In] IntPtr hFile, out uint lpFileSizeHigh);
+        public static extern uint GetFileSize(IntPtr hFile, out uint lpFileSizeHigh);
 
+        [SuppressGCTransition]
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr hObject);
 

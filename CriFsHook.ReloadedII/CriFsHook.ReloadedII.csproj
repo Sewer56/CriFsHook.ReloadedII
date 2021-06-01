@@ -9,7 +9,7 @@
     <StartupObject />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-	
+
   <ItemGroup>
     <None Remove="ModConfig.json" />
     <None Remove="Preview.png" />

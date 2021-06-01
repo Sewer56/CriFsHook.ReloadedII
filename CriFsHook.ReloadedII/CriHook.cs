@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CriFsHook.ReloadedII.CRI;
 using Reloaded.Hooks.Definitions;
-using Reloaded.Hooks.Definitions.X86;
 using Reloaded.Memory.Sigscan;
 using Reloaded.Memory.Sigscan.Structs;
 using Reloaded.Mod.Interfaces;
@@ -77,37 +77,57 @@ namespace CriFsHook.ReloadedII
         }
 
         [UnmanagedCallersOnly()]
-        private static FileEntry* GetFileEntryFromPathImplStatic(void* fullPath) => _this.GetFileEntryFromPathImpl(fullPath);
+        private static FileEntry* GetFileEntryFromPathImplStatic(void* fullPath)
+        {
+            return _this.GetFileEntryFromPathImpl(fullPath);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private FileEntry* GetFileEntryFromPathImpl(void* fullPath)
         {
             if (fullPath == null)
                 return null;
 
             // Check if our collection already has file.
-            string fullFilePath = Marshal.PtrToStringAnsi((IntPtr)fullPath);
-            if (_mappingDictionary.TryGetValue(fullFilePath, out var entry))
+            string managedPath = new string((sbyte*)fullPath);
+            if (_mappingDictionary.TryGetValue(managedPath, out var entry))
+            {
+                LogDebug("DISPOSING");
                 DisposeEntry((FileEntry*) entry);
+            }
 
             // Otherwise create new file entry.
             var fileEntry        = new FileEntry();
-            fileEntry.FileHandle = CreateFileW(fullFilePath, Native.Native.FileAccess.FILE_GENERIC_READ | Native.Native.FileAccess.FILE_GENERIC_WRITE, FileShare.ReadWrite, new SECURITY_ATTRIBUTES(), FileMode.Open, FileFlagsAndAttributes.FILE_ATTRIBUTE_NORMAL);
-            fileEntry.FileSize   = GetFileSize(fileEntry.FileHandle, out var lpFileSizeHigh);
-            fileEntry.FileName   = (char*) Marshal.StringToHGlobalAnsi(fullFilePath);
-            fileEntry.NextEntry  = (FileEntry*) 0;
+            fileEntry.FileHandle = CreateFileA((void*)fullPath, Native.Native.FileAccess.FILE_GENERIC_READ | Native.Native.FileAccess.FILE_GENERIC_WRITE, FileShare.ReadWrite, new SECURITY_ATTRIBUTES(), FileMode.Open, FileFlagsAndAttributes.FILE_ATTRIBUTE_NORMAL);
+            
+            LogDebug("HANDLE " + fileEntry.FileHandle);
+            fileEntry.FileSize = GetFileSize(fileEntry.FileHandle, out var lpFileSizeHigh);
+            
+            LogDebug("SIZE " + fileEntry.FileSize.ToString("X"));
+            fileEntry.FileName = (char*)fullPath;
+
+            LogDebug("NAME " + ((int)fileEntry.FileName).ToString("X"));
+            fileEntry.NextEntry = (FileEntry*) 0;
 
             // Write file entry to unmanaged memory and return
-            var fileEntryPtr = Marshal.AllocHGlobal(sizeof(FileEntry));
-            Marshal.StructureToPtr(fileEntry, fileEntryPtr, false);
-            _mappingDictionary[fullFilePath] = fileEntryPtr;
+            var fileEntryPtr = LocalAlloc(0, (UIntPtr)sizeof(FileEntry));
+
+            LogDebug("ALLOC " + (fileEntryPtr).ToString("X"));
+            Unsafe.WriteUnaligned((void*) fileEntryPtr, fileEntry);
+            _mappingDictionary[managedPath] = fileEntryPtr;
+
+            LogDebug("DONE " + (fileEntryPtr).ToString("X") + "\n========");
             return (FileEntry*) fileEntryPtr;
         }
+
+        [Conditional("DEBUG")]
+        private void LogDebug(string text) => _logger.WriteLine(text);
 
         /* Utility Functions */
         private void DisposeEntry(FileEntry* entry)
         {
             CloseHandle(entry->FileHandle);
-            Marshal.FreeHGlobal((IntPtr) entry->FileName);
-            Marshal.FreeHGlobal((IntPtr) entry);
+            LocalFree((IntPtr)entry);
         }
     }
 }
