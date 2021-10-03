@@ -2,7 +2,7 @@
   "ModId": "criware.filesystem.hook",
   "ModName": "CRI Filesystem Hook",
   "ModAuthor": "Sewer56",
-  "ModVersion": "1.1.7",
+  "ModVersion": "1.1.8",
   "ModDescription": "Hooks the CRIWare Filesystem used in a variety of games such as Sonic Heroes and Sonic Riders. Allows for faster startup times and file redirection to files larger than original.",
   "ModDll": "CriFsHook.ReloadedII.dll",
   "ModR2RManagedDll32": "x86/CriFsHook.ReloadedII.dll",
