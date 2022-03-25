@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace CriFsHook.ReloadedII.CRI
+namespace CriFsHook.ReloadedII.CRI;
+
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct NewFileInfoTuple
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct NewFileInfoTuple
-    {
-        public char* FileName;
-        public int NFileSizeLow;
-        public int NFileSizeHigh;
-    }
+    public char* FileName;
+    public int NFileSizeLow;
+    public int NFileSizeHigh;
 }

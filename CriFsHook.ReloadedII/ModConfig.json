@@ -1,15 +1,50 @@
-{
+﻿{
   "ModId": "criware.filesystem.hook",
   "ModName": "CRI Filesystem Hook",
   "ModAuthor": "Sewer56",
-  "ModVersion": "1.1.8",
+  "ModVersion": "1.1.9",
   "ModDescription": "Hooks the CRIWare Filesystem used in a variety of games such as Sonic Heroes and Sonic Riders. Allows for faster startup times and file redirection to files larger than original.",
   "ModDll": "CriFsHook.ReloadedII.dll",
-  "ModR2RManagedDll32": "x86/CriFsHook.ReloadedII.dll",
-  "ModR2RManagedDll64": "x64/CriFsHook.ReloadedII.dll",
+  "ModIcon": "Preview.png",
+  "ModR2RManagedDll32": "",
+  "ModR2RManagedDll64": "",
   "ModNativeDll32": "",
   "ModNativeDll64": "",
-  "ModIcon": "Preview.png",
-  "ModDependencies": [ "reloaded.sharedlib.hooks" ],
-  "SupportedAppId": [ "tsonic_win.exe", "sonicriders.exe" ]
+  "IsLibrary": false,
+  "ReleaseMetadataFileName": "Sewer56.Update.ReleaseMetadata.json",
+  "PluginData": {
+    "NuGet": {
+      "AllowUpdateFromAnyRepository": false,
+      "DefaultRepositoryUrls": [
+        "http://packages.sewer56.moe:5000/v3/index.json"
+      ]
+    },
+    "GitHubDependencies": {
+      "IdToConfigMap": {
+        "reloaded.sharedlib.hooks": {
+          "Config": {
+            "UserName": "Reloaded.SharedLib.Hooks.ReloadedII",
+            "RepositoryName": "Sewer56",
+            "UseReleaseTag": true,
+            "AssetFileName": "reloaded.sharedlib.hooks.zip"
+          }
+        }
+      }
+    },
+    "GitHubRelease": {
+      "UserName": "Sewer56",
+      "RepositoryName": "CriFsHook.ReloadedII",
+      "UseReleaseTag": true,
+      "AssetFileName": "Mod.zip"
+    }
+  },
+  "IsUniversalMod": false,
+  "ModDependencies": [
+    "reloaded.sharedlib.hooks"
+  ],
+  "OptionalDependencies": [],
+  "SupportedAppId": [
+    "sonicriders.exe",
+    "tsonic_win.exe"
+  ]
 }

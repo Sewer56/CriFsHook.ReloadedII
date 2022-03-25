@@ -8,7 +8,19 @@
     <OutputType>WinExe</OutputType>
     <StartupObject />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>preview</LangVersion>
+    <OutputPath>$(RELOADEDIIMODS)\criware.filesystem.hook</OutputPath>
+    <RobustILLink>true</RobustILLink>
   </PropertyGroup>
+
+  <ItemGroup>
+    <RobustLinkRoots Include="CriFsHook.ReloadedII" />
+    <RobustLinkAssemblies Include="Reloaded.Memory.Sigscan" />
+    <RobustLinkAssemblies Include="Reloaded.Memory" />
+    <RobustLinkAssemblies Include="Heroes.SDK" />
+  </ItemGroup>
+
+  <Import Project="Robust.Trimming.targets" />
 
   <ItemGroup>
     <None Remove="ModConfig.json" />
@@ -25,10 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Reloaded.Memory" Version="4.1.1" />
-    <PackageReference Include="Reloaded.Memory.Sigscan" Version="1.2.1" />
-    <PackageReference Include="Reloaded.Mod.Interfaces" Version="1.9.0" />
-    <PackageReference Include="Reloaded.SharedLib.Hooks" Version="1.7.0" />
+    <PackageReference Include="Reloaded.Memory" Version="4.1.4" />
+    <PackageReference Include="Reloaded.Memory.Sigscan" Version="2.0.0" />
+    <PackageReference Include="Reloaded.Mod.Interfaces" Version="2.1.0" />
+    <PackageReference Include="Reloaded.SharedLib.Hooks" Version="1.9.0" />
   </ItemGroup>
 
   <ItemGroup>
