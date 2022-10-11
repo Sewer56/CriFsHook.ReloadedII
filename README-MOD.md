@@ -1,13 +1,3 @@
-<div align="center">
-	<h1>Reloaded II: Cri Filesystem Hook</h1>
-	<img src="https://i.imgur.com/BjPn7rU.png" width="150" align="center" />
-	<br/> <br/>
-	<strong>An Extract from 7th of August 2019</strong>
-    <p>So what does CRI do again?<br/>
-    *Makes your eyes and cheeks wet*</p>
-<b>Id: criware.filesystem.hook</b>
-</div>
-
 # About This Project
 
 The following project is a [Reloaded II](https://github.com/Reloaded-Project/Reloaded-II) Mod Loader mod that wraps around the "FileSystem" present in CRI Middleware libraries.

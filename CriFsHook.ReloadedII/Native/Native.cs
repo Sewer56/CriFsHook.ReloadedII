@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace CriFsHook.ReloadedII.Native;
 
@@ -13,7 +11,7 @@ public static class Native
     public static extern IntPtr LocalAlloc(uint uFlags, UIntPtr uBytes);
         
     [DllImport("kernel32.dll")]
-    public unsafe static extern IntPtr CreateFileA(
+    public static extern unsafe IntPtr CreateFileA(
         void* lpFileName,
         FileAccess dwDesiredAccess,
         FileShare dwShareMode,

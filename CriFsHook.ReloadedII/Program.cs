@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Runtime.CompilerServices;
 using Reloaded.Mod.Interfaces;
 using Reloaded.Mod.Interfaces.Internal;
 
@@ -6,12 +6,13 @@ using Reloaded.Mod.Interfaces.Internal;
 using System.Diagnostics;
 #endif
 
+[module: SkipLocalsInit]
 namespace CriFsHook.ReloadedII;
 
 public class Program : IMod
 {
-    private IModLoader _modLoader;
-    private CriHook _criHook;
+    private IModLoader _modLoader= null!;
+    private CriHook _criHook = null!;
 
     public void Start(IModLoaderV1 loader)
     {
@@ -33,5 +34,5 @@ public class Program : IMod
     public bool CanSuspend() => false;
 
     /* Automatically called by the mod loader when the mod is about to be unloaded. */
-    public Action Disposing { get; }
+    public Action Disposing { get; } = () => { };
 }

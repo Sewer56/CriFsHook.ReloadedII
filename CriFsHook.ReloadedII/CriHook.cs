@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CriFsHook.ReloadedII.CRI;
 using Reloaded.Hooks.Definitions;
 using Reloaded.Memory.Sigscan;
-using Reloaded.Memory.Sigscan.Structs;
+using Reloaded.Memory.Sigscan.Definitions.Structs;
+using Reloaded.Memory.SigScan.ReloadedII.Interfaces;
 using Reloaded.Mod.Interfaces;
 using static CriFsHook.ReloadedII.Native.Native;
 
@@ -15,52 +13,69 @@ namespace CriFsHook.ReloadedII;
 
 public unsafe class CriHook
 {
-    private Dictionary<string, IntPtr>                  _mappingDictionary = new Dictionary<string, IntPtr>();
-    private IHook<FileTable.BuildFileTableFnPtr>           _buildFileTableHook;
-    private IHook<FileTable.GetFileEntryFromFilePathFnPtr> _getFileEntryFromFilePathHook;
+    private Dictionary<string, IntPtr>                     _mappingDictionary = new();
+    private IHook<FileTable.BuildFileTableFnPtr>           _buildFileTableHook = null!;
+    private IHook<FileTable.GetFileEntryFromFilePathFnPtr> _getFileEntryFromFilePathHook = null!;
 
-    private Process                                     _currentProcess;
-    private ProcessModule                               _mainModule;
-    private ILogger                                     _logger;
-    private IReloadedHooks                              _reloadedHooks;
-    private static CriHook                              _this;
+    private readonly ILogger        _logger;
+    private readonly IReloadedHooks _reloadedHooks;
+    private PatternScanResult? _buildFileTableResult;
+    private PatternScanResult? _getEntryFromPathResult;
+    
+    private static CriHook _this = null!;
 
     /* Setup & Teardown */
-    public static void Main() { }
     public CriHook(IModLoader modLoader)
     {
         _this = this;
         _logger = (ILogger) modLoader.GetLogger();
-        modLoader.GetController<IReloadedHooks>().TryGetTarget(out _reloadedHooks);
+        modLoader.GetController<IReloadedHooks>().TryGetTarget(out _reloadedHooks!);
+        modLoader.GetController<IStartupScanner>().TryGetTarget(out var startupScanner);
 
-        _currentProcess = Process.GetCurrentProcess();
-        _mainModule     = _currentProcess.MainModule;
-        using var scanner = new Scanner(_currentProcess, _mainModule);
+        var currentProcess = Process.GetCurrentProcess();
+        var mainModule     = currentProcess.MainModule!;
 
-        PatternScanResult buildFileTable           = scanner.FindPattern("81 EC ?? ?? ?? ?? 8D 84 24");
-        PatternScanResult getFileEntryFromFilePath = scanner.FindPattern("8B 44 24 04 81 EC ?? ?? ?? ?? 8D 4C 24 04");
+        startupScanner!.AddMainModuleScan("81 EC ?? ?? ?? ?? 8D 84 24", result =>
+        {
+            _buildFileTableResult = result;
+            InitIfBothScanned(mainModule);
+        });
+        
+        startupScanner!.AddMainModuleScan("8B 44 24 04 81 EC ?? ?? ?? ?? 8D 4C 24 04", result =>
+        {
+            _getEntryFromPathResult = result;
+            InitIfBothScanned(mainModule);
+        });
+    }
 
-        if (!buildFileTable.Found || !getFileEntryFromFilePath.Found)
+    private void InitIfBothScanned(ProcessModule mainModule)
+    {
+        if (_buildFileTableResult == null || _getEntryFromPathResult == null)
+            return;
+
+        var fileTableOfs = _buildFileTableResult.Value;
+        var fromPathOfs = _getEntryFromPathResult.Value;
+        if (!fileTableOfs.Found || !fromPathOfs.Found)
         {
             _logger.PrintMessage("[CriFsHook] Not all signatures have been found. Aborting.", _logger.ColorRedLight);
         }
         else
         {
-            _buildFileTableHook           = HookAndPrint<FileTable.BuildFileTableFnPtr>(nameof(BuildFileTableImplStatic), buildFileTable.Offset).Activate();
-            _getFileEntryFromFilePathHook = HookAndPrint<FileTable.GetFileEntryFromFilePathFnPtr>(nameof(GetFileEntryFromPathImplStatic), getFileEntryFromFilePath.Offset).Activate();
+            _buildFileTableHook           = HookAndPrint<FileTable.BuildFileTableFnPtr>(mainModule, nameof(BuildFileTableImplStatic), fileTableOfs.Offset).Activate();
+            _getFileEntryFromFilePathHook = HookAndPrint<FileTable.GetFileEntryFromFilePathFnPtr>(mainModule, nameof(GetFileEntryFromPathImplStatic), fromPathOfs.Offset).Activate();
         }
     }
 
-    private IHook<TFunction> HookAndPrint<TFunction>(string functionName, int offset)
+    private IHook<TFunction> HookAndPrint<TFunction>(ProcessModule module, string functionName, int offset)
     {
-        var address = (long) (_mainModule.BaseAddress + offset);
+        var address = (long) (module.BaseAddress + offset);
         var hook = _reloadedHooks.CreateHook<TFunction>(typeof(CriHook), functionName, address).Activate();
         _logger.PrintMessage($"[CriFsHook] Successfully hooked {typeof(TFunction).Name} at {address:X}", _logger.ColorGreenLight);
         return hook;
     }
 
     /* Hooks */
-    [UnmanagedCallersOnly()]
+    [UnmanagedCallersOnly]
     private static int BuildFileTableImplStatic(void* folderPath, int decrementsOnNewDirectory, int* a3) => _this.BuildFileTableImpl(folderPath, decrementsOnNewDirectory, a3);
     private int BuildFileTableImpl(void* folderPath, int decrementsOnNewDirectory, int* a3)
     {
@@ -68,7 +83,7 @@ public unsafe class CriHook
         return 0;
     }
 
-    [UnmanagedCallersOnly()]
+    [UnmanagedCallersOnly]
     private static FileEntry* GetFileEntryFromPathImplStatic(void* fullPath)
     {
         return _this.GetFileEntryFromPathImpl(fullPath);

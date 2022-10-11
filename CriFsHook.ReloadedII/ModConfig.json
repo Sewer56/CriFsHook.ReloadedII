@@ -27,7 +27,17 @@
             "RepositoryName": "Sewer56",
             "UseReleaseTag": true,
             "AssetFileName": "reloaded.sharedlib.hooks.zip"
-          }
+          },
+          "ReleaseMetadataName": "Sewer56.Update.ReleaseMetadata.json"
+        },
+        "Reloaded.Memory.SigScan.ReloadedII": {
+          "Config": {
+            "UserName": "Reloaded.Memory.SigScan",
+            "RepositoryName": "Reloaded-Project",
+            "UseReleaseTag": false,
+            "AssetFileName": "Mod.zip"
+          },
+          "ReleaseMetadataName": "Reloaded.Memory.SigScan.ReloadedII.ReleaseMetadata.json"
         }
       }
     },
@@ -40,11 +50,13 @@
   },
   "IsUniversalMod": false,
   "ModDependencies": [
-    "reloaded.sharedlib.hooks"
+    "reloaded.sharedlib.hooks",
+    "Reloaded.Memory.SigScan.ReloadedII"
   ],
   "OptionalDependencies": [],
   "SupportedAppId": [
     "sonicriders.exe",
     "tsonic_win.exe"
-  ]
+  ],
+  "ProjectUrl": "https://github.com/Sewer56/CriFsHook.ReloadedII"
 }

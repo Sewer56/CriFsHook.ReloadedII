@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using Reloaded.Hooks.Definitions.Structs;
-using Reloaded.Hooks.Definitions.X86;
 using Reloaded.Memory.Pointers;
 
 namespace CriFsHook.ReloadedII.CRI;
@@ -46,7 +45,7 @@ public unsafe struct FileTable
 
     [Reloaded.Hooks.Definitions.X64.Function(Reloaded.Hooks.Definitions.X64.CallingConventions.Microsoft)]
     [Reloaded.Hooks.Definitions.X86.Function(Reloaded.Hooks.Definitions.X86.CallingConventions.Cdecl)]
-    public struct BuildFileTableFnPtr { public FuncPtr<BlittablePointer<Void>, int, BlittablePointer<int>, int> Value; }
+    public struct BuildFileTableFnPtr { public FuncPtr<BlittablePointer<Reloaded.Hooks.Definitions.Structs.Void>, int, BlittablePointer<int>, int> Value; }
 
     /// <summary>
     /// 006D6330
@@ -82,7 +81,7 @@ public unsafe struct FileTable
 
     [Reloaded.Hooks.Definitions.X64.Function(Reloaded.Hooks.Definitions.X64.CallingConventions.Microsoft)]
     [Reloaded.Hooks.Definitions.X86.Function(Reloaded.Hooks.Definitions.X86.CallingConventions.Cdecl)]
-    public struct GetFileEntryFromFilePathFnPtr { public FuncPtr<BlittablePointer<Void>, BlittablePointer<FileEntry>> Value; }
+    public struct GetFileEntryFromFilePathFnPtr { public FuncPtr<BlittablePointer<Reloaded.Hooks.Definitions.Structs.Void>, BlittablePointer<FileEntry>> Value; }
         
     /// <summary>
     /// 006D01D0
